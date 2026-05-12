@@ -5,6 +5,7 @@
 #include "DatabaseManager.h"
 #include "AuthService.h"
 #include "AlgorithmService.h"
+#include "AudioSteganography.h"
 
 using namespace std;
 using json = nlohmann::json;
@@ -52,23 +53,15 @@ int main() {
     server.Post("/auth/register", [&](const httplib::Request& req, httplib::Response& res) {
         try {
             json body = json::parse(req.body);
-
             if (!body.contains("username") || !body.contains("password")) {
                 setJsonResponse(res, 400, makeResponse(false, "username and password are required."));
                 return;
             }
-
             string username = body["username"].get<string>();
             string password = body["password"].get<string>();
-
             bool ok = auth.registerUser(username, password);
-
-            if (ok) {
-                setJsonResponse(res, 201, makeResponse(true, "Registration successful."));
-            }
-            else {
-                setJsonResponse(res, 409, makeResponse(false, "Registration failed."));
-            }
+            if (ok) setJsonResponse(res, 201, makeResponse(true, "Registration successful."));
+            else setJsonResponse(res, 409, makeResponse(false, "Registration failed."));
         }
         catch (const exception& e) {
             setJsonResponse(res, 500, makeResponse(false, string("Server error: ") + e.what()));
@@ -78,24 +71,18 @@ int main() {
     server.Post("/auth/login", [&](const httplib::Request& req, httplib::Response& res) {
         try {
             json body = json::parse(req.body);
-
             if (!body.contains("username") || !body.contains("password")) {
                 setJsonResponse(res, 400, makeResponse(false, "username and password are required."));
                 return;
             }
-
             string username = body["username"].get<string>();
             string password = body["password"].get<string>();
-
             auto userOpt = auth.loginUser(username, password);
-
             if (!userOpt.has_value()) {
                 setJsonResponse(res, 401, makeResponse(false, "Invalid username or password."));
                 return;
             }
-
             User user = userOpt.value();
-
             json response;
             response["success"] = true;
             response["message"] = "Login successful.";
@@ -103,7 +90,6 @@ int main() {
             response["user"]["username"] = user.username;
             response["user"]["role"] = user.role;
             response["user"]["created_at"] = user.createdAt;
-
             setJsonResponse(res, 200, response);
         }
         catch (const exception& e) {
@@ -114,18 +100,11 @@ int main() {
     server.Post("/vigenere/encrypt", [&](const httplib::Request& req, httplib::Response& res) {
         try {
             json body = json::parse(req.body);
-
             if (!body.contains("username") || !body.contains("text") || !body.contains("key")) {
                 setJsonResponse(res, 400, makeResponse(false, "username, text and key are required."));
                 return;
             }
-
-            json response = makeStubResponse(
-                "vigenere_encrypt",
-                algorithms.vigenereEncryptStub(),
-                body
-            );
-
+            json response = makeStubResponse("vigenere_encrypt", algorithms.vigenereEncryptStub(), body);
             setJsonResponse(res, 200, response);
         }
         catch (const exception& e) {
@@ -136,18 +115,11 @@ int main() {
     server.Post("/vigenere/decrypt", [&](const httplib::Request& req, httplib::Response& res) {
         try {
             json body = json::parse(req.body);
-
             if (!body.contains("username") || !body.contains("text") || !body.contains("key")) {
                 setJsonResponse(res, 400, makeResponse(false, "username, text and key are required."));
                 return;
             }
-
-            json response = makeStubResponse(
-                "vigenere_decrypt",
-                algorithms.vigenereDecryptStub(),
-                body
-            );
-
+            json response = makeStubResponse("vigenere_decrypt", algorithms.vigenereDecryptStub(), body);
             setJsonResponse(res, 200, response);
         }
         catch (const exception& e) {
@@ -158,18 +130,11 @@ int main() {
     server.Post("/sha1/hash", [&](const httplib::Request& req, httplib::Response& res) {
         try {
             json body = json::parse(req.body);
-
             if (!body.contains("username") || !body.contains("text")) {
                 setJsonResponse(res, 400, makeResponse(false, "username and text are required."));
                 return;
             }
-
-            json response = makeStubResponse(
-                "sha1",
-                algorithms.sha1Stub(),
-                body
-            );
-
+            json response = makeStubResponse("sha1", algorithms.sha1Stub(), body);
             setJsonResponse(res, 200, response);
         }
         catch (const exception& e) {
@@ -180,18 +145,16 @@ int main() {
     server.Post("/newton/solve", [&](const httplib::Request& req, httplib::Response& res) {
         try {
             json body = json::parse(req.body);
-
             if (!body.contains("username") || !body.contains("expression") || !body.contains("x0")) {
                 setJsonResponse(res, 400, makeResponse(false, "username, expression and x0 are required."));
                 return;
             }
-
-            json response = makeStubResponse(
-                "newton",
-                algorithms.newtonStub(),
-                body
-            );
-
+            string expression = body["expression"].get<string>();
+            double x0 = body["x0"].get<double>();
+            string result = algorithms.newtonSolve(expression, x0);
+            json response = json::parse(result);
+            response["success"] = true;
+            response["input"] = body;
             setJsonResponse(res, 200, response);
         }
         catch (const exception& e) {
@@ -201,20 +164,37 @@ int main() {
 
     server.Post("/audio/embed", [&](const httplib::Request& req, httplib::Response& res) {
         try {
-            json body = json::parse(req.body);
+            string username;
+            string message;
+            string fileData;
 
-            if (!body.contains("username") || !body.contains("filePath") || !body.contains("message")) {
-                setJsonResponse(res, 400, makeResponse(false, "username, filePath and message are required."));
+            // Параметры из multipart формы
+            if (req.form.has_field("username")) username = req.form.get_field("username");
+            if (req.form.has_field("message")) message = req.form.get_field("message");
+
+            // Файл
+            if (req.form.has_file("audio")) {
+                const auto& f = req.form.get_file("audio");
+                fileData = f.content;
+            }
+
+            cout << "DEBUG: username='" << username << "' message='" << message << "' file=" << fileData.size() << endl;
+
+            if (username.empty() || fileData.empty() || message.empty()) {
+                setJsonResponse(res, 400, makeResponse(false, "username, file and message are required."));
                 return;
             }
 
-            json response = makeStubResponse(
-                "audio_embed",
-                algorithms.audioEmbedStub(),
-                body
-            );
+            vector<uint8_t> wavData(fileData.begin(), fileData.end());
+            vector<uint8_t> stegoData = AudioSteganography::embedMessage(wavData, message);
 
-            setJsonResponse(res, 200, response);
+            if (stegoData.empty()) {
+                setJsonResponse(res, 400, makeResponse(false, "Failed to embed message."));
+                return;
+            }
+
+            res.status = 200;
+            res.set_content(string(stegoData.begin(), stegoData.end()), "audio/wav");
         }
         catch (const exception& e) {
             setJsonResponse(res, 500, makeResponse(false, string("Server error: ") + e.what()));
@@ -223,19 +203,27 @@ int main() {
 
     server.Post("/audio/extract", [&](const httplib::Request& req, httplib::Response& res) {
         try {
-            json body = json::parse(req.body);
+            string username;
+            string fileData;
 
-            if (!body.contains("username") || !body.contains("filePath")) {
-                setJsonResponse(res, 400, makeResponse(false, "username and filePath are required."));
+            if (req.form.has_field("username")) username = req.form.get_field("username");
+
+            if (req.form.has_file("audio")) {
+                const auto& f = req.form.get_file("audio");
+                fileData = f.content;
+            }
+
+            if (username.empty() || fileData.empty()) {
+                setJsonResponse(res, 400, makeResponse(false, "username and file are required."));
                 return;
             }
 
-            json response = makeStubResponse(
-                "audio_extract",
-                algorithms.audioExtractStub(),
-                body
-            );
+            vector<uint8_t> wavData(fileData.begin(), fileData.end());
+            string result = AudioSteganography::extractMessage(wavData);
 
+            json response;
+            response["success"] = true;
+            response["result"] = result;
             setJsonResponse(res, 200, response);
         }
         catch (const exception& e) {
@@ -244,12 +232,6 @@ int main() {
         });
 
     cout << "Server started on http://localhost:8080" << endl;
-
-    bool ok = server.listen("127.0.0.1", 8080);
-
-    if (!ok) {
-        cout << "Failed to start server on port 8080." << endl;
-    }
-
+    server.listen("127.0.0.1", 8080);
     return 0;
 }

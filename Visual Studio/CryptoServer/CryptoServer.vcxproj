@@ -132,8 +132,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlgorithmService.h" />
+    <ClInclude Include="AudioSteganography.h" />
     <ClInclude Include="AuthService.h" />
     <ClInclude Include="DatabaseManager.h" />
+    <ClInclude Include="ExpressionParser.h" />
     <ClInclude Include="User.h" />
     <ClInclude Include="UserRepository.h" />
   </ItemGroup>

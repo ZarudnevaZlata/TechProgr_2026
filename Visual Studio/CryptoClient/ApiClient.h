@@ -14,6 +14,7 @@ private:
     unique_ptr<httplib::Client> client;
 
     ApiClient();
+    static string addSuffix(const string& path, const string& suffix);
 
 public:
     ApiClient(const ApiClient&) = delete;
@@ -24,7 +25,6 @@ public:
     bool ping();
     bool registerUser(const string& username, const string& password);
     bool loginUser(const string& username, const string& password);
-
     bool vigenereEncrypt(const string& username, const string& text, const string& key);
     bool vigenereDecrypt(const string& username, const string& text, const string& key);
     bool sha1Hash(const string& username, const string& text);

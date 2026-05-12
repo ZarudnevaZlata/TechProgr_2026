@@ -31,92 +31,60 @@ int main() {
         cout << "Choose: ";
         cin >> choice;
 
-        if (choice == 0) {
-            break;
-        }
+        if (choice == 0) break;
 
         switch (choice) {
-        case 1:
-            api.ping();
-            break;
-
+        case 1: api.ping(); break;
         case 2:
-            cout << "Username: ";
-            cin >> username;
-            cout << "Password: ";
-            cin >> password;
+            cout << "Username: "; cin >> username;
+            cout << "Password: "; cin >> password;
             api.registerUser(username, password);
             break;
-
         case 3:
-            cout << "Username: ";
-            cin >> username;
-            cout << "Password: ";
-            cin >> password;
+            cout << "Username: "; cin >> username;
+            cout << "Password: "; cin >> password;
             api.loginUser(username, password);
             break;
-
         case 4:
-            cout << "Username: ";
-            cin >> username;
-            cout << "Text: ";
-            cin >> text;
-            cout << "Key: ";
-            cin >> key;
+            cout << "Username: "; cin >> username;
+            cout << "Text: "; cin >> text;
+            cout << "Key: "; cin >> key;
             api.vigenereEncrypt(username, text, key);
             break;
-
         case 5:
-            cout << "Username: ";
-            cin >> username;
-            cout << "Text: ";
-            cin >> text;
-            cout << "Key: ";
-            cin >> key;
+            cout << "Username: "; cin >> username;
+            cout << "Text: "; cin >> text;
+            cout << "Key: "; cin >> key;
             api.vigenereDecrypt(username, text, key);
             break;
-
         case 6:
-            cout << "Username: ";
-            cin >> username;
-            cout << "Text: ";
-            cin >> text;
+            cout << "Username: "; cin >> username;
+            cout << "Text: "; cin >> text;
             api.sha1Hash(username, text);
             break;
-
         case 7:
-            cout << "Username: ";
-            cin >> username;
-            cout << "Expression: ";
-            cin >> expression;
-            cout << "x0: ";
-            cin >> x0;
+            cout << "Username: "; cin >> username;
+            cin.ignore();
+            cout << "Expression: "; getline(cin, expression);
+            cout << "x0: "; cin >> x0;
             api.newtonSolve(username, expression, x0);
             break;
-
         case 8:
-            cout << "Username: ";
-            cin >> username;
-            cout << "File path: ";
-            cin >> filePath;
-            cout << "Message: ";
-            cin >> message;
+            cout << "Username: "; cin >> username;
+            cin.ignore();
+            cout << "File path: "; getline(cin, filePath);
+            cout << "Message to hide: "; getline(cin, message);
             api.audioEmbed(username, filePath, message);
             break;
-
         case 9:
-            cout << "Username: ";
-            cin >> username;
-            cout << "File path: ";
-            cin >> filePath;
+            cout << "Username: "; cin >> username;
+            cin.ignore();
+            cout << "File path: "; getline(cin, filePath);
             api.audioExtract(username, filePath);
             break;
-
         default:
             cout << "Invalid choice." << endl;
-            break;
         }
     }
-
     return 0;
 }

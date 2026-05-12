@@ -1,6 +1,8 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
+#include <vector>
+#include <cstdint>
 
 using namespace std;
 
@@ -9,7 +11,7 @@ public:
     string vigenereEncryptStub();
     string vigenereDecryptStub();
     string sha1Stub();
-    string newtonStub();
-    string audioEmbedStub();
-    string audioExtractStub();
+    string newtonSolve(const string& expression, double x0);
+    vector<uint8_t> audioEmbed(const vector<uint8_t>& wavData, const string& message);
+    string audioExtract(const vector<uint8_t>& wavData);
 };
