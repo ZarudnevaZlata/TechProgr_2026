@@ -1,0 +1,9 @@
+C:/Users/zarud/OneDrive/Desktop/prog/CryptoGui/build/MinGW_64_bit-Debug/CMakeFiles/CryptoGui.dir
+C:/Users/zarud/OneDrive/Desktop/prog/CryptoGui/build/MinGW_64_bit-Debug/CMakeFiles/edit_cache.dir
+C:/Users/zarud/OneDrive/Desktop/prog/CryptoGui/build/MinGW_64_bit-Debug/CMakeFiles/rebuild_cache.dir
+C:/Users/zarud/OneDrive/Desktop/prog/CryptoGui/build/MinGW_64_bit-Debug/CMakeFiles/list_install_components.dir
+C:/Users/zarud/OneDrive/Desktop/prog/CryptoGui/build/MinGW_64_bit-Debug/CMakeFiles/install.dir
+C:/Users/zarud/OneDrive/Desktop/prog/CryptoGui/build/MinGW_64_bit-Debug/CMakeFiles/install/local.dir
+C:/Users/zarud/OneDrive/Desktop/prog/CryptoGui/build/MinGW_64_bit-Debug/CMakeFiles/install/strip.dir
+C:/Users/zarud/OneDrive/Desktop/prog/CryptoGui/build/MinGW_64_bit-Debug/CMakeFiles/CryptoGui_autogen_timestamp_deps.dir
+C:/Users/zarud/OneDrive/Desktop/prog/CryptoGui/build/MinGW_64_bit-Debug/CMakeFiles/CryptoGui_autogen.dir
