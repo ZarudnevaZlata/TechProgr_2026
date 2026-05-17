@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\CryptoGui.dir/objects.a
-C:\msys64\mingw64\bin\ar.exe qc CMakeFiles\CryptoGui.dir/objects.a @CMakeFiles\CryptoGui.dir\objects1.rsp
-C:\msys64\mingw64\bin\g++.exe -g -mwindows -Wl,--whole-archive CMakeFiles\CryptoGui.dir/objects.a -Wl,--no-whole-archive -o CryptoGui.exe -Wl,--out-implib,libCryptoGui.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\CryptoGui.dir\linkLibs.rsp
