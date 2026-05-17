@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QTableWidget>
 #include "ApiClient.h"
 
 class MainWindow : public QMainWindow
@@ -19,6 +20,8 @@ public:
 
 private slots:
     void onExecute();
+    void handleApiResult(const QString& operation, const QString& response);
+    void handleApiError(const QString& operation, const QString& error);
 
 private:
     QComboBox *comboOperation;
@@ -30,9 +33,11 @@ private:
     QLineEdit *editX0;
     QTextEdit *textOutput;
     QPushButton *btnExecute;
+    QTableWidget *resultTable;
 
     ApiClient& m_api;
     void setupUI();
+    void displayResponseInTable(const QString& operation, const QString& response);
 };
 
-#endif // MAINWINDOW_H
+#endif
