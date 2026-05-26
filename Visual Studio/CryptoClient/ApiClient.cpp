@@ -166,3 +166,58 @@ bool ApiClient::audioExtract(const string& username, const string& filePath) {
     cout << res->body << endl;
     return res->status == 200;
 }
+
+bool ApiClient::adminGetUsers(const string& username) {
+    json body;
+    body["username"] = username;
+    auto res = client->Post("/admin/users", body.dump(), "application/json");
+    if (!res) { cout << "Admin users request failed." << endl; return false; }
+    cout << "Status: " << res->status << endl;
+    cout << res->body << endl;
+    return res->status == 200;
+}
+
+bool ApiClient::adminDeleteUser(const string& admin, const string& target) {
+    json body;
+    body["username"] = admin;
+    body["target"] = target;
+    auto res = client->Post("/admin/delete", body.dump(), "application/json");
+    if (!res) { cout << "Admin delete request failed." << endl; return false; }
+    cout << "Status: " << res->status << endl;
+    cout << res->body << endl;
+    return res->status == 200;
+}
+
+bool ApiClient::adminPromote(const string& admin, const string& target, const string& newRole) {
+    json body;
+    body["username"] = admin;
+    body["target"] = target;
+    body["role"] = newRole;
+    auto res = client->Post("/admin/promote", body.dump(), "application/json");
+    if (!res) { cout << "Admin promote request failed." << endl; return false; }
+    cout << "Status: " << res->status << endl;
+    cout << res->body << endl;
+    return res->status == 200;
+}
+
+bool ApiClient::adminBanUser(const string& admin, const string& target) {
+    json body;
+    body["username"] = admin;
+    body["target"] = target;
+    auto res = client->Post("/admin/ban", body.dump(), "application/json");
+    if (!res) { cout << "Ban request failed." << endl; return false; }
+    cout << "Status: " << res->status << endl;
+    cout << res->body << endl;
+    return res->status == 200;
+}
+
+bool ApiClient::adminUnbanUser(const string& admin, const string& target) {
+    json body;
+    body["username"] = admin;
+    body["target"] = target;
+    auto res = client->Post("/admin/unban", body.dump(), "application/json");
+    if (!res) { cout << "Unban request failed." << endl; return false; }
+    cout << "Status: " << res->status << endl;
+    cout << res->body << endl;
+    return res->status == 200;
+}

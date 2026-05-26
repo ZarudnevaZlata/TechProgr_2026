@@ -1,9 +1,4 @@
-﻿  AlgorithmService.cpp
-  AuthService.cpp
-  CryptoServer.cpp
-  DatabaseManager.cpp
-  UserRepository.cpp
-  Создание кода...
+﻿  CryptoServer.cpp
   CryptoServer.vcxproj -> C:\Users\stick\Desktop\TechProgr_2026-main\Visual Studio\x64\Debug\CryptoServer.exe
   "pwsh.exe" не является внутренней или внешней
   командой, исполняемой программой или пакетным файлом.

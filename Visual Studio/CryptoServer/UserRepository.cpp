@@ -38,7 +38,7 @@ optional<User> UserRepository::findByUsername(const string& username) {
         params.append(username);
 
         pqxx::result result = txn.exec(
-            "SELECT id, username, password_hash, role, created_at FROM users WHERE username = $1",
+            "SELECT id, username, password_hash, role, created_at, banned FROM users WHERE username = $1",
             params
         );
 
@@ -56,6 +56,7 @@ optional<User> UserRepository::findByUsername(const string& username) {
         user.passwordHash = row["password_hash"].as<string>();
         user.role = row["role"].as<string>();
         user.createdAt = row["created_at"].c_str();
+        user.banned = row["banned"].as<bool>();
 
         return user;
     }
@@ -83,6 +84,112 @@ bool UserRepository::usernameExists(const string& username) {
     }
     catch (const exception& e) {
         cout << "usernameExists error: " << e.what() << endl;
+        return false;
+    }
+}
+
+vector<User> UserRepository::getAllUsers() {
+    vector<User> users;
+    try {
+        DatabaseManager& db = DatabaseManager::getInstance();
+        pqxx::work txn(db.getConnection());
+
+        pqxx::result result = txn.exec(
+            "SELECT id, username, role, created_at, banned FROM users ORDER BY id"
+        );
+
+        txn.commit();
+
+        for (const auto& row : result) {
+            User user;
+            user.id = row["id"].as<int>();
+            user.username = row["username"].as<string>();
+            user.role = row["role"].as<string>();
+            user.createdAt = row["created_at"].c_str();
+            user.banned = row["banned"].as<bool>();
+            users.push_back(user);
+        }
+    }
+    catch (const exception& e) {
+        cout << "getAllUsers error: " << e.what() << endl;
+    }
+    return users;
+}
+
+bool UserRepository::deleteUser(const string& username) {
+    try {
+        DatabaseManager& db = DatabaseManager::getInstance();
+        pqxx::work txn(db.getConnection());
+
+        pqxx::params params;
+        params.append(username);
+
+        pqxx::result result = txn.exec(
+            "DELETE FROM users WHERE username = $1", params
+        );
+
+        txn.commit();
+        return result.affected_rows() > 0;
+    }
+    catch (const exception& e) {
+        cout << "deleteUser error: " << e.what() << endl;
+        return false;
+    }
+}
+
+bool UserRepository::updateUserRole(const string& username, const string& newRole) {
+    try {
+        DatabaseManager& db = DatabaseManager::getInstance();
+        pqxx::work txn(db.getConnection());
+
+        pqxx::params params;
+        params.append(newRole);
+        params.append(username);
+
+        pqxx::result result = txn.exec(
+            "UPDATE users SET role = $1 WHERE username = $2", params
+        );
+
+        txn.commit();
+        return result.affected_rows() > 0;
+    }
+    catch (const exception& e) {
+        cout << "updateUserRole error: " << e.what() << endl;
+        return false;
+    }
+}
+bool UserRepository::banUser(const string& username) {
+    try {
+        DatabaseManager& db = DatabaseManager::getInstance();
+        pqxx::work txn(db.getConnection());
+        pqxx::params params;
+        params.append(username);
+        pqxx::result result = txn.exec(
+            "UPDATE users SET banned = true WHERE username = $1", params
+        );
+        txn.commit();
+        return result.affected_rows() > 0;
+    }
+    catch (const exception& e) {
+        cout << "banUser error: " << e.what() << endl;
+        return false;
+    }
+}
+
+bool UserRepository::unbanUser(const string& username) {
+    try {
+        DatabaseManager& db = DatabaseManager::getInstance();
+        pqxx::work txn(db.getConnection());
+        pqxx::params params;
+        params.append(username);
+        pqxx::result result = txn.exec(
+            "UPDATE users SET banned = false WHERE username = $1", params
+        );
+        txn.commit();
+        return result.affected_rows() > 0;
+    }
+    catch (const exception& e) {
+        cout << "unbanUser error: " << e.what() << endl;
         return false;
     }
 }

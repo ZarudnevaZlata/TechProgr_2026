@@ -77,6 +77,13 @@ int main() {
             }
             string username = body["username"].get<string>();
             string password = body["password"].get<string>();
+
+            // Проверяем бан до логина
+            if (auth.isBanned(username)) {
+                setJsonResponse(res, 403, makeResponse(false, "User is banned."));
+                return;
+            }
+
             auto userOpt = auth.loginUser(username, password);
             if (!userOpt.has_value()) {
                 setJsonResponse(res, 401, makeResponse(false, "Invalid username or password."));
@@ -89,6 +96,7 @@ int main() {
             response["user"]["id"] = user.id;
             response["user"]["username"] = user.username;
             response["user"]["role"] = user.role;
+            response["user"]["banned"] = user.banned;
             response["user"]["created_at"] = user.createdAt;
             setJsonResponse(res, 200, response);
         }
@@ -225,6 +233,118 @@ int main() {
             response["success"] = true;
             response["result"] = result;
             setJsonResponse(res, 200, response);
+        }
+        catch (const exception& e) {
+            setJsonResponse(res, 500, makeResponse(false, string("Server error: ") + e.what()));
+        }
+        });
+
+    server.Post("/admin/users", [&](const httplib::Request& req, httplib::Response& res) {
+        try {
+            json body = json::parse(req.body);
+            if (!body.contains("username")) {
+                setJsonResponse(res, 400, makeResponse(false, "username is required."));
+                return;
+            }
+            string username = body["username"].get<string>();
+            vector<User> users = auth.getAllUsers(username);
+            if (users.empty() && !auth.isAdmin(username)) {
+                setJsonResponse(res, 403, makeResponse(false, "Access denied or no users."));
+                return;
+            }
+            json response;
+            response["success"] = true;
+            json usersArray = json::array();
+            for (const auto& u : users) {
+                json userJson;
+                userJson["id"] = u.id;
+                userJson["username"] = u.username;
+                userJson["role"] = u.role;
+                userJson["banned"] = u.banned;
+                userJson["created_at"] = u.createdAt;
+                usersArray.push_back(userJson);
+            }
+            response["users"] = usersArray;
+            setJsonResponse(res, 200, response);
+        }
+        catch (const exception& e) {
+            setJsonResponse(res, 500, makeResponse(false, string("Server error: ") + e.what()));
+        }
+        });
+
+    server.Post("/admin/delete", [&](const httplib::Request& req, httplib::Response& res) {
+        try {
+            json body = json::parse(req.body);
+            if (!body.contains("username") || !body.contains("target")) {
+                setJsonResponse(res, 400, makeResponse(false, "username and target are required."));
+                return;
+            }
+            string admin = body["username"].get<string>();
+            string target = body["target"].get<string>();
+            bool ok = auth.deleteUser(admin, target);
+            if (ok) {
+                setJsonResponse(res, 200, makeResponse(true, "User " + target + " deleted."));
+            }
+            else {
+                setJsonResponse(res, 400, makeResponse(false, "Failed to delete user."));
+            }
+        }
+        catch (const exception& e) {
+            setJsonResponse(res, 500, makeResponse(false, string("Server error: ") + e.what()));
+        }
+        });
+
+    server.Post("/admin/promote", [&](const httplib::Request& req, httplib::Response& res) {
+        try {
+            json body = json::parse(req.body);
+            if (!body.contains("username") || !body.contains("target") || !body.contains("role")) {
+                setJsonResponse(res, 400, makeResponse(false, "username, target and role are required."));
+                return;
+            }
+            string admin = body["username"].get<string>();
+            string target = body["target"].get<string>();
+            string newRole = body["role"].get<string>();
+            bool ok = auth.updateUserRole(admin, target, newRole);
+            if (ok) {
+                setJsonResponse(res, 200, makeResponse(true, "Role updated to " + newRole + "."));
+            }
+            else {
+                setJsonResponse(res, 400, makeResponse(false, "Failed to update role."));
+            }
+        }
+        catch (const exception& e) {
+            setJsonResponse(res, 500, makeResponse(false, string("Server error: ") + e.what()));
+        }
+        });
+
+    server.Post("/admin/ban", [&](const httplib::Request& req, httplib::Response& res) {
+        try {
+            json body = json::parse(req.body);
+            if (!body.contains("username") || !body.contains("target")) {
+                setJsonResponse(res, 400, makeResponse(false, "username and target are required."));
+                return;
+            }
+            string admin = body["username"].get<string>();
+            string target = body["target"].get<string>();
+            bool ok = auth.banUser(admin, target);
+            setJsonResponse(res, ok ? 200 : 400, makeResponse(ok, ok ? "User banned." : "Failed to ban."));
+        }
+        catch (const exception& e) {
+            setJsonResponse(res, 500, makeResponse(false, string("Server error: ") + e.what()));
+        }
+        });
+
+    server.Post("/admin/unban", [&](const httplib::Request& req, httplib::Response& res) {
+        try {
+            json body = json::parse(req.body);
+            if (!body.contains("username") || !body.contains("target")) {
+                setJsonResponse(res, 400, makeResponse(false, "username and target are required."));
+                return;
+            }
+            string admin = body["username"].get<string>();
+            string target = body["target"].get<string>();
+            bool ok = auth.unbanUser(admin, target);
+            setJsonResponse(res, ok ? 200 : 400, makeResponse(ok, ok ? "User unbanned." : "Failed to unban."));
         }
         catch (const exception& e) {
             setJsonResponse(res, 500, makeResponse(false, string("Server error: ") + e.what()));

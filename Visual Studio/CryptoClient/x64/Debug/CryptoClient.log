@@ -1,6 +1,4 @@
-﻿  ApiClient.cpp
-  CryptoClient.cpp
-  Создание кода...
+﻿  CryptoClient.cpp
   CryptoClient.vcxproj -> C:\Users\stick\Desktop\TechProgr_2026-main\Visual Studio\x64\Debug\CryptoClient.exe
   "pwsh.exe" не является внутренней или внешней
   командой, исполняемой программой или пакетным файлом.
