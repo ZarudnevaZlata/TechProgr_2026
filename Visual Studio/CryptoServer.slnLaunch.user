@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Новый профиль",
+    "Projects": [
+      {
+        "Path": "CryptoServer\\CryptoServer.vcxproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "CryptoClient\\CryptoClient.vcxproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
