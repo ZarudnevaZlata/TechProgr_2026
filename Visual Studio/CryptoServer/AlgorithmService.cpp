@@ -2,12 +2,28 @@
 
 using namespace std;
 
-string AlgorithmService::vigenereEncryptStub() {
-    return "Vigenere encrypt is not implemented yet.";
+string AlgorithmService::vigenereEncrypt(const string& text, const string& key) {
+    if (key.empty()) return "error: empty key";
+    
+    string result = text;
+    size_t keyLen = key.length();
+    
+    for (size_t i = 0; i < text.length(); i++) {
+        result[i] = text[i] + key[i % keyLen];
+    }
+    return result;
 }
 
-string AlgorithmService::vigenereDecryptStub() {
-    return "Vigenere decrypt is not implemented yet.";
+string AlgorithmService::vigenereDecrypt(const string& text, const string& key) {
+    if (key.empty()) return "error: empty key";
+    
+    string result = text;
+    size_t keyLen = key.length();
+    
+    for (size_t i = 0; i < text.length(); i++) {
+        result[i] = text[i] - key[i % keyLen];
+    }
+    return result;
 }
 
 string AlgorithmService::sha1Stub() {
