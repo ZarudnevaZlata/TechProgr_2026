@@ -120,11 +120,16 @@ int main() {
                 return;
             }
 
-            json response = makeStubResponse(
-                "vigenere_encrypt",
-                algorithms.vigenereEncryptStub(),
-                body
-            );
+            string text = body["text"].get<string>();
+            string key = body["key"].get<string>();
+
+            string encrypted = algorithms.vigenereEncrypt(text, key);
+
+            json response;
+            response["success"] = true;
+            response["module"] = "vigenere_encrypt";
+            response["result"] = encrypted;
+            response["input"] = body;
 
             setJsonResponse(res, 200, response);
         }
@@ -142,11 +147,16 @@ int main() {
                 return;
             }
 
-            json response = makeStubResponse(
-                "vigenere_decrypt",
-                algorithms.vigenereDecryptStub(),
-                body
-            );
+            string text = body["text"].get<string>();
+            string key = body["key"].get<string>();
+
+            string decrypted = algorithms.vigenereDecrypt(text, key);
+
+            json response;
+            response["success"] = true;
+            response["module"] = "vigenere_decrypt";
+            response["result"] = decrypted;
+            response["input"] = body;
 
             setJsonResponse(res, 200, response);
         }
@@ -154,7 +164,7 @@ int main() {
             setJsonResponse(res, 500, makeResponse(false, string("Server error: ") + e.what()));
         }
         });
-
+            
     server.Post("/sha1/hash", [&](const httplib::Request& req, httplib::Response& res) {
         try {
             json body = json::parse(req.body);
