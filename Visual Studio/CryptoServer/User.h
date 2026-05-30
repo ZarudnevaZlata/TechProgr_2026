@@ -10,4 +10,5 @@ struct User {
     string passwordHash;
     string role;
     string createdAt;
+    bool banned = false;
 };

@@ -47,5 +47,11 @@
     <ClInclude Include="AlgorithmService.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
+    <ClInclude Include="ExpressionParser.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioSteganography.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
