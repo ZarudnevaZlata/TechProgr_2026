@@ -112,7 +112,13 @@ int main() {
                 setJsonResponse(res, 400, makeResponse(false, "username, text and key are required."));
                 return;
             }
-            json response = makeStubResponse("vigenere_encrypt", algorithms.vigenereEncryptStub(), body);
+            string text = body["text"].get<string>();
+            string key = body["key"].get<string>();
+            string result = algorithms.vigenereEncrypt(text, key);
+            json response;
+            response["success"] = true;
+            response["result"] = result;
+            response["input"] = body;
             setJsonResponse(res, 200, response);
         }
         catch (const exception& e) {
@@ -127,7 +133,13 @@ int main() {
                 setJsonResponse(res, 400, makeResponse(false, "username, text and key are required."));
                 return;
             }
-            json response = makeStubResponse("vigenere_decrypt", algorithms.vigenereDecryptStub(), body);
+            string text = body["text"].get<string>();
+            string key = body["key"].get<string>();
+            string result = algorithms.vigenereDecrypt(text, key);
+            json response;
+            response["success"] = true;
+            response["result"] = result;
+            response["input"] = body;
             setJsonResponse(res, 200, response);
         }
         catch (const exception& e) {

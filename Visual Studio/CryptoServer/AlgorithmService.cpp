@@ -7,6 +7,59 @@
 
 using namespace std;
 
+// ========== Вспомогательные функции для Виженера ==========
+static bool isLetter(char c) {
+    return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+}
+
+// ========== Шифр Виженера ==========
+string AlgorithmService::vigenereEncrypt(const string& text, const string& key) {
+    if (key.empty()) return text;
+
+    string result;
+    size_t keyIndex = 0;
+
+    for (char c : text) {
+        if (isLetter(c)) {
+            bool isUpper = isupper(c);
+            char base = isUpper ? 'A' : 'a';
+            char keyChar = tolower(key[keyIndex % key.size()]) - 'a';
+            char encrypted = (c - base + keyChar) % 26 + base;
+            result += encrypted;
+            keyIndex++;
+        }
+        else {
+            result += c;
+        }
+    }
+
+    return result;
+}
+
+string AlgorithmService::vigenereDecrypt(const string& text, const string& key) {
+    if (key.empty()) return text;
+
+    string result;
+    size_t keyIndex = 0;
+
+    for (char c : text) {
+        if (isLetter(c)) {
+            bool isUpper = isupper(c);
+            char base = isUpper ? 'A' : 'a';
+            char keyChar = tolower(key[keyIndex % key.size()]) - 'a';
+            char decrypted = (c - base - keyChar + 26) % 26 + base;
+            result += decrypted;
+            keyIndex++;
+        }
+        else {
+            result += c;
+        }
+    }
+
+    return result;
+}
+
+// ========== Метод Ньютона ==========
 string AlgorithmService::newtonSolve(const string& expression, double x0) {
     const double epsilon = 1e-7;
     const int maxIterations = 100;
@@ -58,6 +111,7 @@ string AlgorithmService::newtonSolve(const string& expression, double x0) {
     }
 }
 
+// ========== Аудиостеганография ==========
 vector<uint8_t> AlgorithmService::audioEmbed(const vector<uint8_t>& wavData, const string& message) {
     return AudioSteganography::embedMessage(wavData, message);
 }
@@ -66,14 +120,7 @@ string AlgorithmService::audioExtract(const vector<uint8_t>& wavData) {
     return AudioSteganography::extractMessage(wavData);
 }
 
-string AlgorithmService::vigenereEncryptStub() {
-    return "Vigenere encrypt is not implemented yet.";
-}
-
-string AlgorithmService::vigenereDecryptStub() {
-    return "Vigenere decrypt is not implemented yet.";
-}
-
+// ========== Заглушки ==========
 string AlgorithmService::sha1Stub() {
     return "SHA1 is not implemented yet.";
 }

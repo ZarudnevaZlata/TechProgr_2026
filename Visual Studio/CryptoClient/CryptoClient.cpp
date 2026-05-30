@@ -81,13 +81,16 @@ int main() {
             break;
         case 4:
             cout << "Username: "; cin >> username;
-            cout << "Text: "; cin >> text;
+            cin.ignore();
+            cout << "Text: "; getline(cin, text);
             cout << "Key: "; cin >> key;
             api.vigenereEncrypt(username, text, key);
             break;
+
         case 5:
             cout << "Username: "; cin >> username;
-            cout << "Text: "; cin >> text;
+            cin.ignore();
+            cout << "Text: "; getline(cin, text);
             cout << "Key: "; cin >> key;
             api.vigenereDecrypt(username, text, key);
             break;
