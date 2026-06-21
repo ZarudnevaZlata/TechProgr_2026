@@ -1,0 +1,6 @@
+CryptoGui/build/
+CryptoGui/build-*/
+*.user
+*.creator.user
+.qtc_clangd/
+CMakeUserPresets.json
